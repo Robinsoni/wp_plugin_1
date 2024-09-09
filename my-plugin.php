@@ -67,6 +67,12 @@ function my_sc_fun($atts)
     // the html you write between this will be rendered
     return ob_get_clean();
      */
-    return 'Function Call '.$atts["test"] ;
+    include 'notice.php';
 }
-add_shortcode('my-sc', 'my_sc_fun');
+/* add_shortcode('my-sc', 'my_sc_fun'); */
+
+$path = plugins_url('js/main.js',__FILE__);
+
+ $dep = array('jquery');
+ $ver = filemtime(plugin_dir_path(__FILE__).'js/main.js'); // making it dynamic so that cache gets updated everytime the file is modified.
+  wp_enqueue_script('my-custom-js',$path, $dep,$ver,true); // true means add it in footer after body tag
