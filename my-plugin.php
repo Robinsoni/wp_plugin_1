@@ -55,8 +55,18 @@ register_deactivation_hook(
     'my_plugin_deactivation'
 );
 
-function my_sc_fun()
-{
-    return 'Function Call';
+function my_sc_fun($atts)
+{ // for default attributes use shortcode atts
+    $atts = array_change_key_case($atts, CASE_LOWER);
+    $atts = shortcode_atts(array(
+        'test' => "this is default value"
+    ),$atts);
+
+    /* 
+    ob_start();
+    // the html you write between this will be rendered
+    return ob_get_clean();
+     */
+    return 'Function Call '.$atts["test"] ;
 }
 add_shortcode('my-sc', 'my_sc_fun');
