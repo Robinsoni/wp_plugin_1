@@ -1,5 +1,9 @@
-<?php
- $args = array(
+<?php 
+ 
+
+
+/**  */   
+$args = array(
     'post_type' => 'post'
 ); 
 $the_query = new WP_Query($args); 
@@ -21,3 +25,9 @@ wp_reset_postdata();
 $html = ob_get_clean();
 echo $html;
 ?>
+<div class="wrap">
+    <h1>Employee List</h1>
+    <input type="text" id="search_employee" placeholder="Search employee by name..." />
+    <button id="search_button">Search</button>
+    <div id="employee_list"></div>
+</div>

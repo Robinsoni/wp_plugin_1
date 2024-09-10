@@ -72,7 +72,6 @@ function my_sc_fun($atts)
 
 function my_custom_scripts()
 {
-
     $path_js = plugins_url('js/main.js', __FILE__);
     $path_style = plugins_url('css/style.css', __FILE__);
 
@@ -82,14 +81,33 @@ function my_custom_scripts()
     // is_user_logged_in(); -  this helps you check whether the user is logged in or not
     wp_enqueue_style('my-custom-style', $path_style, "", $ver_style); // true means add it in footer after body tag
     wp_enqueue_script('my-custom-js', $path_js, $dep, $ver, true); // true means add it in footer after body tag
-    wp_add_inline_script('my-custom-js', 'var is_login = ' . is_user_logged_in() . ';', 'before');
-
+    wp_add_inline_script('my-custom-js', 'var is_login = ' . is_user_logged_in() . ';', 'before'); 
     /** Let's say we want to include to only one specific page then how would that work */
     if (is_page('home')) {
         wp_enqueue_script('my-custom-js', $path_js, $dep, $ver, true); // true means add it in footer after body tag 
     }
 }
+
 add_action("wp_enqueue_scripts", 'my_custom_scripts');
+/** Enqueue admin page related scripts */
+add_action('admin_enqueue_scripts', 'enqueue_my_plugin_scripts');
+add_action('wp_head','head_fun'); 
+// Hook to add the menu and submenu
+add_action('admin_menu', 'my_custom_plugin_menu');
+// AJAX handler for searching employees
+add_action('wp_ajax_search_employees', 'search_employees');
+add_shortcode('wp_sc_select', "shortcode_select");
+
+
+function enqueue_my_plugin_scripts() {
+    
+    $ver = filemtime(plugin_dir_path(__FILE__) . 'js/employee-search.js'); 
+    wp_enqueue_script('jquery');
+    wp_enqueue_script('employee-search', plugin_dir_url(__FILE__) . 'js/employee-search.js', array('jquery'), $ver, true);
+
+    // Localize script to pass the AJAX URL to JavaScript
+    wp_localize_script('employee-search', 'ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
+}
 
 // ifyou want to enqueue scripts in admin panel then you can use admin enqueue scripts 
 
@@ -127,9 +145,7 @@ function shortcode_select()
 <?php
     $html = ob_get_clean();
     return $html;
-}
-add_shortcode('wp_sc_select', "shortcode_select");
-
+} 
 function my_posts()
 {
     $args = array(
@@ -173,11 +189,7 @@ function head_fun(){
         echo get_post_meta($post->ID,'views',true);
     }
 }
-add_action('wp_head','head_fun');
 
-
-// Hook to add the menu and submenu
-add_action('admin_menu', 'my_custom_plugin_menu');
 
 // Function to create the menu and submenu
 function my_custom_plugin_menu() {
@@ -236,5 +248,24 @@ function my_plugin_submenu_2_page() {
     </div>
     <?php
 }
+ 
+function search_employees() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'emp';
+    $search = sanitize_text_field($_POST['search']);
 
-/** Let's see how to do all of this work. */
+    if (empty($search)) {
+        $results = $wpdb->get_results("SELECT * FROM $table_name");
+    } else {
+        $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_name WHERE name LIKE %s", '%' . $wpdb->esc_like($search) . '%'));
+    }
+
+    if ($results) {
+        foreach ($results as $employee) {
+            echo '<p>Name: ' . esc_html($employee->name) . ' | Email: ' . esc_html($employee->email) . ' | Phone: ' . esc_html($employee->phone) . '</p>';
+        }
+    } else {
+        echo '<p>No employees found.</p>';
+    } 
+    wp_die();
+}
