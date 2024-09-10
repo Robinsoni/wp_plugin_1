@@ -99,18 +99,14 @@ add_action('wp_ajax_search_employees', 'search_employees');
 add_shortcode('wp_sc_select', "shortcode_select");
 
 
-function enqueue_my_plugin_scripts() {
-    
+function enqueue_my_plugin_scripts() { 
     $ver = filemtime(plugin_dir_path(__FILE__) . 'js/employee-search.js'); 
     wp_enqueue_script('jquery');
-    wp_enqueue_script('employee-search', plugin_dir_url(__FILE__) . 'js/employee-search.js', array('jquery'), $ver, true);
-
+    wp_enqueue_script('employee-search', plugin_dir_url(__FILE__) . 'js/employee-search.js', array('jquery'), $ver, true); 
     // Localize script to pass the AJAX URL to JavaScript
     wp_localize_script('employee-search', 'ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
-}
-
-// ifyou want to enqueue scripts in admin panel then you can use admin enqueue scripts 
-
+} 
+// ifyou want to enqueue scripts in admin panel then you can use admin enqueue scripts  
 function shortcode_select()
 {
     global $wpdb, $table_prefix;
@@ -188,9 +184,7 @@ function head_fun(){
         }
         echo get_post_meta($post->ID,'views',true);
     }
-}
-
-
+} 
 // Function to create the menu and submenu
 function my_custom_plugin_menu() {
     // Add a top-level menu item
@@ -222,8 +216,7 @@ function my_custom_plugin_menu() {
         'my-plugin-submenu-2', // Menu slug
         'my_plugin_submenu_2_page' // Callback function for the submenu page
     );
-}
-
+} 
 // Callback function for the main menu page
 function my_plugin_main_page() {
     include 'admin/main-page.php';
@@ -237,8 +230,7 @@ function my_plugin_submenu_1_page() {
         <p>This is the content of Submenu 1.</p>
     </div>
     <?php
-}
-
+} 
 // Callback function for the second submenu
 function my_plugin_submenu_2_page() {
     ?>
@@ -247,8 +239,7 @@ function my_plugin_submenu_2_page() {
         <p>This is the content of Submenu 2.</p>
     </div>
     <?php
-}
- 
+} 
 function search_employees() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'emp';
