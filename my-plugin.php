@@ -194,7 +194,7 @@ function my_custom_plugin_menu() {
     
     // Add a submenu under the main menu
     add_submenu_page(
-        'my-plugin',           // Parent slug
+        'my-  ',           // Parent slug
         'Submenu 1',           // Page title
         'Submenu 1',           // Menu title
         'manage_options',      // Capability required
@@ -214,12 +214,7 @@ function my_custom_plugin_menu() {
 
 // Callback function for the main menu page
 function my_plugin_main_page() {
-    ?>
-    <div class="wrap">
-        <h1>Welcome to My Plugin</h1>
-        <p>This is the main settings page for the plugin.</p>
-    </div>
-    <?php
+    include 'admin/main-page.php';
 }
 
 // Callback function for the first submenu
@@ -241,3 +236,5 @@ function my_plugin_submenu_2_page() {
     </div>
     <?php
 }
+
+/** Let's see how to do all of this work. */
