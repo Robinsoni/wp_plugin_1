@@ -143,7 +143,7 @@ function my_posts()
         echo '<ul>';
         while ($the_query->have_posts()) {
             $the_query->the_post();
-            echo '<li>' . esc_html(get_the_title()) . '</li>';
+            echo '<li><a href="'. get_the_permalink().'">' . esc_html(get_the_title()) . '</a></li>';
         }
         echo '</ul>';
     } else {
@@ -155,3 +155,89 @@ function my_posts()
     return $html;
 }
 add_shortcode('my-posts', "my_posts");
+/**
+ * This function is used in getting the number of times the post has been read.         
+ */
+function head_fun(){
+    if(is_single()){
+        // page , post,  attachment
+        global $post;// this will have the post information which is opened
+        echo $post->ID;
+       $views =  get_post_meta($post->ID,'views',true);
+        if($views != ""){
+            $views++;
+            update_post_meta($post->ID,'views',$views); 
+        }else{
+            add_post_meta($post->ID,'views',1); 
+        }
+        echo get_post_meta($post->ID,'views',true);
+    }
+}
+add_action('wp_head','head_fun');
+
+
+// Hook to add the menu and submenu
+add_action('admin_menu', 'my_custom_plugin_menu');
+
+// Function to create the menu and submenu
+function my_custom_plugin_menu() {
+    // Add a top-level menu item
+    add_menu_page(
+        'My Plugin Settings',  // Page title
+        'My Plugin',           // Menu title
+        'manage_options',      // Capability required
+        'my-plugin',           // Menu slug
+        'my_plugin_main_page', // Callback function for the menu page
+        'dashicons-admin-generic',  // Icon for the menu (dashicons)
+        6                      // Position in the menu
+    );
+    
+    // Add a submenu under the main menu
+    add_submenu_page(
+        'my-plugin',           // Parent slug
+        'Submenu 1',           // Page title
+        'Submenu 1',           // Menu title
+        'manage_options',      // Capability required
+        'my-plugin-submenu-1', // Menu slug
+        'my_plugin_submenu_1_page' // Callback function for the submenu page
+    );
+
+    add_submenu_page(
+        'my-plugin',           // Parent slug
+        'Submenu 2',           // Page title
+        'Submenu 2',           // Menu title
+        'manage_options',      // Capability required
+        'my-plugin-submenu-2', // Menu slug
+        'my_plugin_submenu_2_page' // Callback function for the submenu page
+    );
+}
+
+// Callback function for the main menu page
+function my_plugin_main_page() {
+    ?>
+    <div class="wrap">
+        <h1>Welcome to My Plugin</h1>
+        <p>This is the main settings page for the plugin.</p>
+    </div>
+    <?php
+}
+
+// Callback function for the first submenu
+function my_plugin_submenu_1_page() {
+    ?>
+    <div class="wrap">
+        <h1>Submenu 1</h1>
+        <p>This is the content of Submenu 1.</p>
+    </div>
+    <?php
+}
+
+// Callback function for the second submenu
+function my_plugin_submenu_2_page() {
+    ?>
+    <div class="wrap">
+        <h1>Submenu 2</h1>
+        <p>This is the content of Submenu 2.</p>
+    </div>
+    <?php
+}
