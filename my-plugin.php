@@ -96,6 +96,7 @@ add_action('wp_head','head_fun');
 add_action('admin_menu', 'my_custom_plugin_menu');
 // AJAX handler for searching employees
 add_action('wp_ajax_search_employees', 'search_employees');
+add_action('wp_ajax_nopriv_search_employees', 'search_employees');
 add_shortcode('wp_sc_select', "shortcode_select");
 
 
@@ -218,9 +219,20 @@ function my_custom_plugin_menu() {
     );
 } 
 // Callback function for the main menu page
-function my_plugin_main_page() {
-    include 'admin/main-page.php';
+function my_plugin_main_page($data="") {
+    include 'admin/main-page.php'; 
 }
+function my_plugin_main_page_fe() {
+  ob_start();?> <div class="wrap">
+  <h1>Employee List</h1>
+  <input type="text" id="search_employee" placeholder="Search employee by name..." />
+  <button id="search_button">Search</button>
+  <div id="employee_list"></div>
+</div>;<?php
+$html = ob_clean();
+return $html;
+}
+add_shortcode('employee_data','my_plugin_main_page_fe');
 
 // Callback function for the first submenu
 function my_plugin_submenu_1_page() {
