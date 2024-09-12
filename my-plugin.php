@@ -72,6 +72,7 @@ function my_sc_fun($atts)
 
 function my_custom_scripts()
 {
+    
     $path_js = plugins_url('js/main.js', __FILE__);
     $path_style = plugins_url('css/style.css', __FILE__);
 
@@ -82,10 +83,15 @@ function my_custom_scripts()
     wp_enqueue_style('my-custom-style', $path_style, "", $ver_style); // true means add it in footer after body tag
     wp_enqueue_script('my-custom-js', $path_js, $dep, $ver, true); // true means add it in footer after body tag
     wp_add_inline_script('my-custom-js', 'var is_login = ' . is_user_logged_in() . ';', 'before'); 
+   
     /** Let's say we want to include to only one specific page then how would that work */
+    wp_enqueue_script('employee-search', plugin_dir_url(__FILE__) . 'js/employee-search.js', array('jquery'), $ver, true); 
+    // Localize script to pass the AJAX URL to JavaScript
+    wp_localize_script('employee-search', 'ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
     if (is_page('home')) {
         wp_enqueue_script('my-custom-js', $path_js, $dep, $ver, true); // true means add it in footer after body tag 
     }
+    
 }
 
 add_action("wp_enqueue_scripts", 'my_custom_scripts');
@@ -101,6 +107,7 @@ add_shortcode('wp_sc_select', "shortcode_select");
 
 
 function enqueue_my_plugin_scripts() { 
+   
     $ver = filemtime(plugin_dir_path(__FILE__) . 'js/employee-search.js'); 
     wp_enqueue_script('jquery');
     wp_enqueue_script('employee-search', plugin_dir_url(__FILE__) . 'js/employee-search.js', array('jquery'), $ver, true); 
@@ -223,13 +230,12 @@ function my_plugin_main_page($data="") {
     include 'admin/main-page.php'; 
 }
 function my_plugin_main_page_fe() {
-  ob_start();?> <div class="wrap">
+    $html = ' <div class="wrap">
   <h1>Employee List</h1>
   <input type="text" id="search_employee" placeholder="Search employee by name..." />
   <button id="search_button">Search</button>
   <div id="employee_list"></div>
-</div>;<?php
-$html = ob_clean();
+</div>'; 
 return $html;
 }
 add_shortcode('employee_data','my_plugin_main_page_fe');
@@ -253,10 +259,11 @@ function my_plugin_submenu_2_page() {
     <?php
 } 
 function search_employees() {
+  
     global $wpdb;
     $table_name = $wpdb->prefix . 'emp';
     $search = sanitize_text_field($_POST['search']);
-
+   
     if (empty($search)) {
         $results = $wpdb->get_results("SELECT * FROM $table_name");
     } else {
