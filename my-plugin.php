@@ -279,3 +279,45 @@ function search_employees() {
     } 
     wp_die();
 }
+
+/**
+ * Custome post types
+ */
+// Hook into the 'init' action
+add_action('init', 'create_custom_post_type'); 
+// Function to create the custom post type
+function create_custom_post_type() {
+    $labels = array(
+        'name'               => _x('Books name', 'post type general name'),
+        'singular_name'      => _x('Book sn', 'post type singular name'),
+        'menu_name'          => _x('Books mn', 'admin menu'),
+        'name_admin_bar'     => _x('Book name admin', 'add new on admin bar'),
+        'add_new'            => _x('Add New', 'book'),
+        'add_new_item'       => __('Add New Book'),
+        'new_item'           => __('New Book - new item'),
+        'edit_item'          => __('Edit Book - edit item'),
+        'view_item'          => __('View Book - view item'),
+        'all_items'          => __('All Books - all items'),
+        'search_items'       => __('Search Books - search items'),
+        'parent_item_colon'  => __('Parent Books:'),
+        'not_found'          => __('No books found.'),
+        'not_found_in_trash' => __('No books found in Trash.'),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array('slug' => 'book'),
+        'capability_type'    => 'post',
+        'has_archive'        => true,
+        'hierarchical'       => false,
+        'menu_position'      => 20,
+        'supports'           => array('title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments'),
+    );
+
+    register_post_type('book', $args);
+}
