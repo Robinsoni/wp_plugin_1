@@ -150,6 +150,20 @@ function shortcode_select()
     $html = ob_get_clean();
     return $html;
 } 
+
+// register user using shortcode
+// Include the Register class file
+function my_plugin_register_form() {
+    include 'public/Register.php';
+
+    // Create an instance of the Register class
+    $register = new Register();
+
+    // Call the user_registration_form method
+    echo $register->user_registration_form();
+}
+add_shortcode('user_registration','my_plugin_register_form');
+
 function my_posts()
 {
     $args = array(
@@ -310,6 +324,7 @@ function create_custom_post_type() {
         'publicly_queryable' => true,
         'show_ui'            => true,
         'show_in_menu'       => true,
+        'show_in_rest'     => true,
         'query_var'          => true,
         'rewrite'            => array('slug' => 'book'),
         'capability_type'    => 'post',
